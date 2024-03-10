@@ -5,12 +5,14 @@ class Model {
     this.tracks = [
       {
         author: "Lesfm",
-        url: "./tracks/forest-lullaby-110624.mp3",
+        coverUrl: "./images/cover-2.png",
+        trackUrl: "./tracks/forest-lullaby-110624.mp3",
         title: "Forest Lullaby",
       },
       {
         author: "Cosmo Sheldrake",
-        url: "tracks/lost-in-city-lights-145038.mp3",
+        coverUrl: "./images/cover-1.png",
+        trackUrl: "tracks/lost-in-city-lights-145038.mp3",
         title: "Lost in the City Lights",
       },
     ];
@@ -45,39 +47,53 @@ class Model {
 
 class View {
   constructor() {
-    this.app = this.getElement("#root");
+    // this.app = this.getElement("#root");
+    this.createRoot("#root");
 
-    this.titleElement = this.createElement("div", "title");
-    this.titleElement.textContent = "";
+    /*html*/
+    this.renderTemplate(`
+      <div class="container">
+        <img class="cover" id="cover" src="" />
+        <div class="title" id="title"></div>
+        <div class="author" id="author"></div>
 
-    this.authorElement = this.createElement("div", "artist");
-    this.authorElement.textContent = "";
+          <div class="times">
+            <div id="timer"></div>
+            <div id="duration"></div>
+          </div>
 
-    // Play Button
-    this.playButton = this.createElement("button", "play-button");
-    this.playButton.textContent = "Play";
-
-    // Next Button
-    this.nextButton = this.createElement("button", "next-button");
-    this.nextButton.textContent = "Next";
-
-    // Timer Element
-    this.timerElement = this.createElement("div", "timer");
-    this.timerElement.textContent = "00:00";
-
-    // Duration Element
-    this.durationElement = this.createElement("div", "duration");
-    this.durationElement.textContent = "00:00";
-
-    this.app.append(
-      this.titleElement,
-      this.authorElement,
-      this.timerElement,
-      this.durationElement,
-      this.playButton,
-      this.nextButton
-    );
+        <div class="progress-wrapper">
+          <div class="progress" id="progress"></div>
+        </div>
+        <div class="commands">
+          <button class="step" id="previous"><</button>
+          <button class="play" id="play">
+            <img class="active" id="play-icon" src="./images/svg/play.svg" />
+            <img id="stop-icon" src="./images/svg/pause.svg" />
+          </button>
+          <button class="step" id="next">></button>
+        </div>
+      </div>
+  `);
+    this.coverImageElement = this.getElement("#cover");
+    this.titleElement = this.getElement("#title");
+    this.authorElement = this.getElement("#author");
+    this.playButton = this.getElement("#play");
+    this.nextButton = this.getElement("#next");
+    this.timerElement = this.getElement("#timer");
+    this.durationElement = this.getElement("#duration");
+    this.progressElement = this.getElement("#progress");
+    this.playIconElement = this.getElement("#play-icon");
+    this.stopIconElement = this.getElement("#stop-icon");
   }
+
+  createRoot = (selector) => {
+    this.app = this.getElement("#root");
+  };
+
+  renderTemplate = (template) => {
+    this.app.innerHTML = template;
+  };
 
   getElement(selector) {
     const element = document.querySelector(selector);
@@ -99,20 +115,38 @@ class View {
   displayTrack(track) {
     this.setTextContentElement(this.titleElement, track.title);
     this.setTextContentElement(this.authorElement, track.author);
-    this.setCurrentTrackAudioElement(track.url);
+    this.setCurrentTrackAudioElement(track.trackUrl);
+    this.coverImageElement.src = track.coverUrl;
     this.timerElement.textContent = "00:00";
+    // this.progressElement.textContent = "0%";
   }
 
   setCurrentTrackAudioElement(trackUrl) {
     this.audioElement = new Audio(trackUrl);
+    this.audioElement.addEventListener("loadeddata", () => {
+      this.durationElement.textContent = getFormatedTime(
+        Math.floor(this.audioElement.duration)
+      );
+    });
   }
 
-  setCurrentTrackTimer(currentTime) {
-    this.timerElement.textContent = currentTime;
+  setCurrentTrackTimer() {
+    this.timerElement.textContent = getFormatedTime(
+      Math.floor(this.audioElement.currentTime) + 1
+    );
+    this.progressElement.style.width =
+      Math.floor(
+        (this.audioElement.currentTime / this.audioElement.duration) * 100
+      ) + "%";
   }
 
   bindPlayTrack(handler) {
     this.playButton.addEventListener("click", () => {
+      this.stopIconElement.classList.toggle("active");
+      this.playIconElement.classList.toggle("active");
+      this.audioElement.paused
+        ? this.audioElement.play()
+        : this.audioElement.pause();
       handler();
     });
   }
@@ -144,16 +178,13 @@ class Controller {
 
   handleNext = () => {
     this.view.audioElement.pause();
-    this.view.playButton.textContent = "Play";
+    this.view.stopIconElement.classList.toggle("active");
+    this.view.playIconElement.classList.toggle("active");
+    this.view.progressElement.style.width = "0%";
     this.model.nextTrack();
     clearInterval(this.intervalId);
     this.intervalId = null;
   };
-
-  handlePlayClick() {
-    this.view.playButton.textContent = "Stop";
-    this.view.audioElement.play();
-  }
 
   handleStopClick() {
     this.view.playButton.textContent = "Play";
@@ -163,15 +194,8 @@ class Controller {
   handlePlayTrack = () => {
     if (!this.intervalId) {
       this.intervalId = setInterval(() => {
-        this.view.setCurrentTrackTimer(
-          getFormatedTime(Math.floor(this.view.audioElement.currentTime) + 1)
-        );
+        this.view.setCurrentTrackTimer();
       }, 1000);
-    }
-    if (this.view.audioElement.paused) {
-      this.handlePlayClick();
-    } else {
-      this.handleStopClick();
     }
   };
 }
