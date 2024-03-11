@@ -43,7 +43,8 @@ body {
 
 .title {
   color: var(--white);
-  margin-bottom: 8px;
+  margin-bottom: 4px;
+  margin-top: 16px;
 }
 
 .author {
@@ -69,6 +70,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
 }
 
 .play img {
@@ -86,6 +88,7 @@ body {
   border: 8px;
   background-color: transparent;
   color: var(--grey);
+  cursor: pointer;
 }
 
 .times {

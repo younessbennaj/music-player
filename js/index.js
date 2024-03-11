@@ -66,12 +66,16 @@ class View {
           <div class="progress" id="progress"></div>
         </div>
         <div class="commands">
-          <button class="step" id="previous"><</button>
+          <button class="step" id="previous">
+            <img src="./images/svg/previous.svg" />
+          </button>
           <button class="play" id="play">
             <img class="active" id="play-icon" src="./images/svg/play.svg" />
             <img id="stop-icon" src="./images/svg/pause.svg" />
           </button>
-          <button class="step" id="next">></button>
+          <button class="step" id="next">
+            <img src="./images/svg/next.svg" />
+          </button>
         </div>
       </div>
   `);
