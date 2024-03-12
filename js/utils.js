@@ -10,3 +10,7 @@ export function getFormatedTime(totalSeconds) {
   );
   return minutes + ":" + seconds;
 }
+
+export function getPercentage(a, b) {
+  return Math.max(0, Math.min(Math.ceil((a / b) * 100), 100));
+}

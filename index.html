@@ -14,6 +14,32 @@
     <title>Document</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div class="container">
+      <img class="cover" id="cover" src="" />
+      <div class="title" id="title"></div>
+      <div class="author" id="author"></div>
+      <div class="times">
+        <div id="timer"></div>
+        <div id="duration"></div>
+      </div>
+
+      <div id="progress" class="progress">
+        <div id="progress-inner" class="progress-inner">
+          <div id="progress-track" class="progress-track"></div>
+        </div>
+      </div>
+      <div class="commands">
+        <button class="step" id="previous">
+          <img src="./images/svg/previous.svg" />
+        </button>
+        <button class="play" id="play">
+          <img class="active" id="play-icon" src="./images/svg/play.svg" />
+          <img id="stop-icon" src="./images/svg/pause.svg" />
+        </button>
+        <button class="step" id="next">
+          <img src="./images/svg/next.svg" />
+        </button>
+      </div>
+    </div>
   </body>
 </html>
