@@ -19,7 +19,7 @@ body {
   position: relative;
   background-image: url("../images/bg.jpg");
   touch-action: none;
-  padding: 168px;
+  padding: 128px;
 }
 
 .container {
