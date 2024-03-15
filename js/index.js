@@ -40,7 +40,15 @@ class Model {
         ? 0
         : this.currentTrackIndex + 1;
     this.setCurrentTrack(this.currentTrackIndex);
-    this.timer = getFormatedTime(0);
+    this.onTrackChanged();
+  }
+
+  previousTrack() {
+    this.currentTrackIndex =
+      this.currentTrackIndex === 0
+        ? this.tracks.length - 1
+        : this.currentTrackIndex - 1;
+    this.setCurrentTrack(this.currentTrackIndex);
     this.onTrackChanged();
   }
 }
@@ -58,6 +66,7 @@ class View {
     this.authorElement = this.getElement("#author");
     this.playButton = this.getElement("#play");
     this.nextButton = this.getElement("#next");
+    this.previousButton = this.getElement("#previous");
     this.timerElement = this.getElement("#timer");
     this.durationElement = this.getElement("#duration");
     this.playIconElement = this.getElement("#play-icon");
@@ -97,6 +106,10 @@ class View {
 
     if (this.trackIsPlayed) {
       this.audioElement.play();
+    } else {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
+      this.progressInnerElement.style.width = "0%";
     }
   }
 
@@ -166,6 +179,13 @@ class View {
     });
   }
 
+  bindPrevious(handler) {
+    this.previousButton.addEventListener("click", () => {
+      this.audioElement.pause();
+      handler();
+    });
+  }
+
   updateProgress = (percentage) => {
     this.progressInnerElement.style.width = percentage + "%";
     this.audioElement.currentTime =
@@ -228,6 +248,7 @@ class Controller {
     this.model.bindTrackChanged(this.onTrackChanged);
     this.view.bindPlayTrack(this.handleNext);
     this.view.bindNext(this.handleNext);
+    this.view.bindPrevious(this.handlePrevious);
     this.model.init();
   }
 
@@ -237,6 +258,10 @@ class Controller {
 
   handleNext = () => {
     this.model.nextTrack();
+  };
+
+  handlePrevious = () => {
+    this.model.previousTrack();
   };
 
   handleStopClick() {
